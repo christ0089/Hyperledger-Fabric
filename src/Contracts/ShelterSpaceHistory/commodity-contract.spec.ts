@@ -1,16 +1,17 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
 
-
+*/
 import { Context } from 'fabric-contract-api';
 import { ChaincodeStub, ClientIdentity } from 'fabric-shim';
-import { CommodityContract } from '../..';
+import {ShelterSpaceContract } from './shelter-space-contract';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import winston = require('winston');
+import { ShelterSpace } from './shelterSpace';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -27,24 +28,26 @@ class TestContext implements Context {
 
 describe('CommodityContract', () => {
 
-    let contract: CommodityContract;
+    let contract: ShelterSpaceContract;
     let ctx: TestContext;
 
     beforeEach(() => {
-        contract = new CommodityContract();
+        contract = new ShelterSpaceContract();
         ctx = new TestContext();
-        ctx.stub.getState.withArgs('1001').resolves(Buffer.from('{"value":"commodity 1001 value"}'));
-        ctx.stub.getState.withArgs('1002').resolves(Buffer.from('{"value":"commodity 1002 value"}'));
+        const shelter1 = new ShelterSpace('1001', 50);
+        const shelter2 = new ShelterSpace('1002', 100);
+        ctx.stub.getState.withArgs('1001').resolves(Buffer.from(JSON.stringify(shelter1)));
+        ctx.stub.getState.withArgs('1002').resolves(Buffer.from(JSON.stringify(shelter2)));
     });
 
     describe('#commodityExists', () => {
 
         it('should return true for a commodity', async () => {
-            await contract.commodityExists(ctx, '1001').should.eventually.be.true;
+            await contract.ShelterSpaceExists(ctx, '1001').should.eventually.be.true;
         });
 
         it('should return false for a commodity that does not exist', async () => {
-            await contract.commodityExists(ctx, '1003').should.eventually.be.false;
+            await contract.ShelterSpaceExists(ctx, '1003').should.eventually.be.false;
         });
 
     });
@@ -52,12 +55,14 @@ describe('CommodityContract', () => {
     describe('#createCommodity', () => {
 
         it('should create a commodity', async () => {
-            await contract.createCommodity(ctx, '1003', 'commodity 1003 value');
+            const shelter = new ShelterSpace('1003', 150);
+            await contract.createShelterSpace(ctx, '1003', shelter);
             ctx.stub.putState.should.have.been.calledOnceWithExactly('1003', Buffer.from('{"value":"commodity 1003 value"}'));
         });
 
         it('should throw an error for a commodity that already exists', async () => {
-            await contract.createCommodity(ctx, '1001', 'myvalue').should.be.rejectedWith(/The commodity 1001 already exists/);
+            const shelter = new ShelterSpace('1003', 150);
+            await contract.createShelterSpace(ctx, '1001', shelter).should.be.rejectedWith(/The commodity 1001 already exists/);
         });
 
     });
@@ -65,11 +70,11 @@ describe('CommodityContract', () => {
     describe('#readCommodity', () => {
 
         it('should return a commodity', async () => {
-            await contract.readCommodity(ctx, '1001').should.eventually.deep.equal({ value: 'commodity 1001 value' });
+            await contract.readShelterSpace(ctx, '1001').should.eventually.deep.equal({ value: 'commodity 1001 value' });
         });
 
         it('should throw an error for a commodity that does not exist', async () => {
-            await contract.readCommodity(ctx, '1003').should.be.rejectedWith(/The commodity 1003 does not exist/);
+            await contract.readShelterSpace(ctx, '1003').should.be.rejectedWith(/The commodity 1003 does not exist/);
         });
 
     });
@@ -77,12 +82,14 @@ describe('CommodityContract', () => {
     describe('#updateCommodity', () => {
 
         it('should update a commodity', async () => {
-            await contract.updateCommodity(ctx, '1001', 'commodity 1001 new value');
+            const shelter = new ShelterSpace('1001', 200);
+            await contract.updateShelterSpace(ctx, '1001', shelter);
             ctx.stub.putState.should.have.been.calledOnceWithExactly('1001', Buffer.from('{"value":"commodity 1001 new value"}'));
         });
 
         it('should throw an error for a commodity that does not exist', async () => {
-            await contract.updateCommodity(ctx, '1003', 'commodity 1003 new value').should.be.rejectedWith(/The commodity 1003 does not exist/);
+            const shelter = new ShelterSpace('1001', 200);
+            await contract.updateShelterSpace(ctx, '1003', shelter).should.be.rejectedWith(/The commodity 1003 does not exist/);
         });
 
     });
@@ -90,16 +97,14 @@ describe('CommodityContract', () => {
     describe('#deleteCommodity', () => {
 
         it('should delete a commodity', async () => {
-            await contract.deleteCommodity(ctx, '1001');
+            await contract.deleteShelterSpace(ctx, '1001');
             ctx.stub.deleteState.should.have.been.calledOnceWithExactly('1001');
         });
 
         it('should throw an error for a commodity that does not exist', async () => {
-            await contract.deleteCommodity(ctx, '1003').should.be.rejectedWith(/The commodity 1003 does not exist/);
+            await contract.deleteShelterSpace(ctx, '1003').should.be.rejectedWith(/The commodity 1003 does not exist/);
         });
 
     });
 
 });
-
- */

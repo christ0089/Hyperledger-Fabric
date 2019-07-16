@@ -1,4 +1,4 @@
-interface Address {
+export interface Address {
     address: string;
     city: string;
     state: string;
@@ -7,7 +7,7 @@ interface Address {
 }
 
 
-interface Shelter {
+export interface Shelter {
     shelterId: string;
     name: string;
     capacity: number;

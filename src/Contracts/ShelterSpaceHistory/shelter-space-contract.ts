@@ -5,8 +5,14 @@
 import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
 import { ShelterSpace } from './shelterSpace';
 
-@Info({title: 'ShelterSpaceContract', description: 'Shelter Space Contract Definition' })
+@Info({ title: 'ShelterSpaceContract', description: 'Shelter Space Contract Definition' })
 export class ShelterSpaceContract extends Contract {
+
+    public async init(ctx) {
+        const shelterSpace1 = new ShelterSpace('001', 1);
+        await ctx.stub.putState('ShelterSpace' + 1, Buffer.from(JSON.stringify(shelterSpace1)));
+        console.info('Added <--> ', shelterSpace1);
+    }
 
     @Transaction(false)
     @Returns('boolean')
@@ -21,9 +27,8 @@ export class ShelterSpaceContract extends Contract {
         if (exists) {
             throw new Error(`The ShelterSpace ${shelterSpaceId} already exists`);
         }
-        let shelterSpace = new ShelterSpace();
-        shelterSpace = value;
-        const buffer = Buffer.from(JSON.stringify(shelterSpace));
+
+        const buffer = Buffer.from(JSON.stringify(value));
         await ctx.stub.putState(shelterSpaceId, buffer);
     }
 
@@ -45,9 +50,8 @@ export class ShelterSpaceContract extends Contract {
         if (!exists) {
             throw new Error(`The ShelterSpace ${shelterSpaceId} does not exist`);
         }
-        let shelterSpace = new ShelterSpace();
-        shelterSpace = newValue;
-        const buffer = Buffer.from(JSON.stringify(shelterSpace));
+
+        const buffer = Buffer.from(JSON.stringify(newValue));
         await ctx.stub.putState(shelterSpaceId, buffer);
     }
 

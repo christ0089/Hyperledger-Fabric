@@ -1,25 +1,25 @@
-enum CommodityState {
+export enum CommodityState {
     CREATED,
     IN_TRANSIT,
     DELIVERED,
     OUT_OF_STOCK,
 }
 
-enum RefugeeState {
+export enum RefugeeState {
     ARRIVED,
     DEPARTED,
     CRITICAL,
     RESCUED,
 }
 
-enum ShelterState {
+export enum ShelterState {
     AVAILABLE,
     AFFECTED,
     FULL_CAPACITY,
     OVER_CAPACITY,
 }
 
-enum ShelterParticipantRole {
+export enum ShelterParticipantRole {
     ADMIN,
     RECEIVER,
     DELIVER,

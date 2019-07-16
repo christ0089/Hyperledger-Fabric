@@ -1,42 +1,32 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
+import { cStateHistory, cHistory } from '../../Models/States/historyStates';
 
-import { Object, Property } from 'fabric-contract-api';
 
-@Object()
+'use strict';
+
 export class Commodity {
-
-    @Property()
     public tradingSymbol: string;
-
-    @Property()
     public mainExchange: string;
-
-    @Property()
     public name: string;
-
-    @Property()
     public originalQuantity: number;
-
-    @Property()
     public consumedQuantity: number;
-
-    @Property()
     public availableQuantity: number;
-
-    @Property()
+    public currentState: cStateHistory;
     public commodityStateHist: cStateHistory[];
-
-    @Property()
     public commodityHist: cHistory[];
 
-    @Property()
-    public currentState: cStateHistory;
 
-    @Property()
-    private donor: Donor;
-
-    @Property()
-    private shelter: Shelter;
+    constructor(tradingSymbol, mainExchange, name, originalQuantity, consumedQuantity, currentState, commodityStateHist, commodityHist) {
+        this.tradingSymbol = tradingSymbol;
+        this.mainExchange = mainExchange;
+        this.name = name;
+        this.originalQuantity = originalQuantity;
+        this.consumedQuantity = consumedQuantity;
+        this.commodityHist = commodityHist;
+        this.currentState = currentState;
+        this.commodityStateHist = commodityStateHist;
+        this.commodityHist = commodityHist;
+    }
 }

@@ -1,14 +1,16 @@
-interface User {
+import { ShelterParticipantRole } from "../States/states";
+
+export interface User {
     email: string;
     name: string;
     phone?: string;
 }
 
-interface Donor extends User { }
+export interface Donor extends User { }
 
-interface Refugee extends User { }
+export interface Refugee extends User { }
 
-interface ShelterParticipant extends User {
+export interface ShelterParticipant extends User {
     participantRole: ShelterParticipantRole;
     shelterId: string;
 }

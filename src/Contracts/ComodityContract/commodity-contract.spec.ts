@@ -1,16 +1,17 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
-
+*/
 
 import { Context } from 'fabric-contract-api';
 import { ChaincodeStub, ClientIdentity } from 'fabric-shim';
-import { CommodityContract } from '../..';
+import { CommodityContract } from './commodity-contract';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import winston = require('winston');
+import { Commodity } from './commodity';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -22,7 +23,7 @@ class TestContext implements Context {
     public logging = {
         getLogger: sinon.stub().returns(sinon.createStubInstance(winston.createLogger().constructor)),
         setLevel: sinon.stub(),
-     };
+    };
 }
 
 describe('CommodityContract', () => {
@@ -33,8 +34,16 @@ describe('CommodityContract', () => {
     beforeEach(() => {
         contract = new CommodityContract();
         ctx = new TestContext();
-        ctx.stub.getState.withArgs('1001').resolves(Buffer.from('{"value":"commodity 1001 value"}'));
-        ctx.stub.getState.withArgs('1002').resolves(Buffer.from('{"value":"commodity 1002 value"}'));
+        const commodity1 = new Commodity('1001', '', '', 50, 0, {
+                'state': 2,
+                "updateTime": "2019-07-10T22:18:12.129Z"
+        }, [], []);
+        const commodity2 = new Commodity('1002', '', '', 50, 0, {
+            'state': 2,
+            "updateTime": "2019-07-10T22:18:12.129Z"
+        }, [], []);
+        ctx.stub.getState.withArgs('1001').resolves(Buffer.from(JSON.stringify(commodity1)));
+        ctx.stub.getState.withArgs('1002').resolves(Buffer.from(JSON.stringify(commodity2)));
     });
 
     describe('#commodityExists', () => {
@@ -52,12 +61,14 @@ describe('CommodityContract', () => {
     describe('#createCommodity', () => {
 
         it('should create a commodity', async () => {
-            await contract.createCommodity(ctx, '1003', 'commodity 1003 value');
+            const commodity = new Commodity('1003', '', '', 50, 0, {}, [], []);
+            await contract.createCommodity(ctx, '1003', commodity);
             ctx.stub.putState.should.have.been.calledOnceWithExactly('1003', Buffer.from('{"value":"commodity 1003 value"}'));
         });
 
         it('should throw an error for a commodity that already exists', async () => {
-            await contract.createCommodity(ctx, '1001', 'myvalue').should.be.rejectedWith(/The commodity 1001 already exists/);
+            const commodity = new Commodity('1001', '', '', 50, 0, {}, [], []);
+            await contract.createCommodity(ctx, '1001', commodity).should.be.rejectedWith(/The commodity 1001 already exists/);
         });
 
     });
@@ -77,12 +88,12 @@ describe('CommodityContract', () => {
     describe('#updateCommodity', () => {
 
         it('should update a commodity', async () => {
-            await contract.updateCommodity(ctx, '1001', 'commodity 1001 new value');
+            await contract.updateCommodity(ctx, '1001', null);
             ctx.stub.putState.should.have.been.calledOnceWithExactly('1001', Buffer.from('{"value":"commodity 1001 new value"}'));
         });
 
         it('should throw an error for a commodity that does not exist', async () => {
-            await contract.updateCommodity(ctx, '1003', 'commodity 1003 new value').should.be.rejectedWith(/The commodity 1003 does not exist/);
+            await contract.updateCommodity(ctx, '1003', null).should.be.rejectedWith(/The commodity 1003 does not exist/);
         });
 
     });
@@ -99,6 +110,4 @@ describe('CommodityContract', () => {
         });
 
     });
-
 });
- */
