@@ -1,6 +1,6 @@
 {
     "name": "HyperledgerFabric",
-    "version": "0.0.8",
+    "version": "0.0.10",
     "description": "My Smart Contract",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",

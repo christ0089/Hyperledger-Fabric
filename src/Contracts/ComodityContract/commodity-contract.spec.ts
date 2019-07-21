@@ -36,8 +36,10 @@ describe('CommodityContract', () => {
         ctx = new TestContext();
         const commodity1 = new Commodity();
         commodity1.tradingSymbol = '1001';
+        commodity1.value = 'commodity 1001 value';
         const commodity2 = new Commodity();
         commodity1.tradingSymbol = '1002';
+        commodity2.value = 'commodity 1002 value';
         ctx.stub.getState.withArgs('1001').resolves(Buffer.from(JSON.stringify(commodity1)));
         ctx.stub.getState.withArgs('1002').resolves(Buffer.from(JSON.stringify(commodity2)));
     });
@@ -56,7 +58,7 @@ describe('CommodityContract', () => {
     describe('#createCommodity', () => {
 
         it('should create a commodity', async () => {
-            await contract.createCommodity(ctx, '1003', 'Hello', 50);
+            await contract.createCommodity(ctx, '1003', 'commodity 1003 value', 50);
             ctx.stub.putState.should.have.been.calledOnceWithExactly('1003', Buffer.from('{"value":"commodity 1003 value"}'));
         });
 

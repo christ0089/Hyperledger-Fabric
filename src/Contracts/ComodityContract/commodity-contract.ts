@@ -2,7 +2,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
-import { cHistory } from '../../Models/States/historyStates';
 import { CommodityState } from '../../Models/States/states';
 import { Commodity } from './commodity';
 
